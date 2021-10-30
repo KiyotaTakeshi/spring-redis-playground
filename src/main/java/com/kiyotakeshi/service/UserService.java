@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface UserService {
 
+    boolean existUser(Long id);
+
     boolean saveUser(User user);
 
     List<User> fetchAllUser();

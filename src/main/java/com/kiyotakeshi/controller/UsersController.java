@@ -21,7 +21,7 @@ public class UsersController {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveUser(@RequestBody User user) {
+    public ResponseEntity<String> saveUser(@RequestBody User user) {
         boolean result = userService.saveUser(user);
         if (result)
             return ResponseEntity.ok("User Created Successfully!!");
@@ -31,16 +31,25 @@ public class UsersController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> fetchAllUser() {
+    public ResponseEntity<?> fetchAllUser() {
         List<User> users = userService.fetchAllUser();
+
+        if(users.size() == 0) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not Found!!");
+        }
+
         Collections.sort(users, new UserCompare());
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> fetchUserById(@PathVariable("id") Long id) {
-        User user;
-        user = userService.fetchUserById(id);
+    public ResponseEntity<?> fetchUserById(@PathVariable("id") Long id) {
+        User user = userService.fetchUserById(id);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not Found!!");
+        }
+
         return ResponseEntity.ok(user);
     }
 

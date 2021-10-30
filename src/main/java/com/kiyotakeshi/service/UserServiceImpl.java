@@ -5,6 +5,7 @@ import com.kiyotakeshi.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -16,9 +17,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean existUser(Long id) {
+        return userRepository.existUser(id);
+    }
+
+    @Override
     public boolean saveUser(User user) {
-        User found = this.fetchUserById(user.getId());
-        if (found != null) {
+        if (this.existUser(user.getId())) {
             System.out.println("User already exists");
             return false;
         }
@@ -37,13 +42,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean deleteUser(Long id) {
+        if (!this.existUser(id)) {
+            System.out.println("User not found");
+            return false;
+        }
         return userRepository.deleteUser(id);
     }
 
     @Override
     public boolean updateUser(Long id, User user) {
-        User found = this.fetchUserById(user.getId());
-        if (found == null) {
+        if (!this.existUser(id)) {
             System.out.println("User not found");
             return false;
         }

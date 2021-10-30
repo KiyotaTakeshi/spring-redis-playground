@@ -18,6 +18,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public boolean existUser(Long id) {
+        return redisTemplate.opsForHash().get(KEY, id.toString()) != null;
+    }
+
+    @Override
     public boolean saveUser(User user) {
         try {
             redisTemplate.opsForHash().put(KEY, user.getId().toString(), user);
@@ -35,13 +40,13 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User fetchUserById(Long id) {
-        return (User) redisTemplate.opsForHash().get(KEY,id.toString());
+        return (User) redisTemplate.opsForHash().get(KEY, id.toString());
     }
 
     @Override
     public boolean deleteUser(Long id) {
         try {
-            redisTemplate.opsForHash().delete(KEY,id.toString());
+            redisTemplate.opsForHash().delete(KEY, id.toString());
             return true;
         } catch (Exception e) {
             e.printStackTrace();
