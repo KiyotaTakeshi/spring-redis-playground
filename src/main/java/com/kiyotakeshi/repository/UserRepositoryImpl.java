@@ -57,7 +57,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public boolean updateUser(Long id, User user) {
         try {
-            redisTemplate.opsForHash().put(KEY, id, user);
+            redisTemplate.opsForHash().put(KEY, id.toString(), user);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

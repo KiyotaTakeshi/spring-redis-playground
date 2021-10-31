@@ -115,7 +115,7 @@ class RedisDemoApplicationIntegrationTests {
         ResponseEntity<?> response = this.restTemplate.getForEntity(getTestBaseUrl(), String.class);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("User not Found!!",response.getBody());
+        assertEquals("User not Found!!", response.getBody());
     }
 
     @Test
@@ -124,7 +124,7 @@ class RedisDemoApplicationIntegrationTests {
                 this.restTemplate.getForEntity(getTestBaseUrl() + "/{id}", User.class, 2L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("tanaka",response.getBody().getFirstName());
+        assertEquals("tanaka", response.getBody().getFirstName());
     }
 
     @Test
@@ -133,7 +133,7 @@ class RedisDemoApplicationIntegrationTests {
                 this.restTemplate.getForEntity(getTestBaseUrl() + "/{id}", String.class, 99L);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("User not Found!!",response.getBody());
+        assertEquals("User not Found!!", response.getBody());
     }
 
     @Test
@@ -158,8 +158,24 @@ class RedisDemoApplicationIntegrationTests {
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
     }
 
-    // TODO:
     @Test
     void updateUser() {
+        Long userId = 1L;
+
+        User request = new User(userId, "kaimei", "taro", "updated@example.com", 25);
+
+        ResponseEntity<String> result = this.restTemplate.exchange(
+                getTestBaseUrl() + "/{id}",
+                HttpMethod.PUT,
+                new HttpEntity<User>(request),
+                String.class,
+                userId);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals("User Updated Successfully!!", result.getBody());
+
+        var cachedUser = (User) redisTemplate.opsForHash().get(KEY, request.getId().toString());
+        assertEquals(request.getFirstName(), cachedUser.getFirstName());
+        assertEquals(request.getEmail(), cachedUser.getEmail());
     }
 }
